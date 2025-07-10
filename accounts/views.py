@@ -22,3 +22,4 @@ class CustomLoginView(LoginView):
 
 class CustomLogoutView(LogoutView):
     template_name = 'accounts/logout.html'
+

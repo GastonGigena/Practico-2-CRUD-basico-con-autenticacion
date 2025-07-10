@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Cerrar Sesión{% endblock %}
+{% block title %}Cerrar sesión - CRUD Django{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body text-center">
-                <h4><i class="fas fa-sign-out-alt"></i> Sesión Cerrada</h4>
-                <p>Has cerrado sesión exitosamente.</p>
-                <a href="{% url 'home' %}" class="btn btn-primary">Volver al Inicio</a>
-            </div>
-        </div>
+<div class="container text-center mt-5">
+    <div class="alert alert-success shadow rounded p-4">
+        <h2 class="mb-3">
+            <i class="fas fa-check-circle text-success"></i> Sesión cerrada exitosamente
+        </h2>
+        <p class="lead">Gracias por usar el sistema de gestión.</p>
+        <hr>
+        <a href="{% url 'home' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-home"></i> Volver al Inicio
+        </a>
     </div>
 </div>
 {% endblock %}
