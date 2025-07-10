@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Personas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-users"></i> Personas</h2>
+            <div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'personas:crear' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Persona
+                    </a>
+                    <a href="{% url 'personas:carga_masiva' %}" class="btn btn-success">
+                        <i class="fas fa-upload"></i> Carga Masiva
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Búsqueda -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <input type="text" name="q" class="form-control me-2" placeholder="Buscar personas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de personas -->
+        <div class="card">
+            <div class="card-body">
+                {% if personas %}
+                    {% for persona in personas %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <h5 class="mb-1">{{ persona.apellido }}, {{ persona.nombre }}</h5>
+                                <small class="text-muted">
+                                    <i class="fas fa-birthday-cake"></i> {{ persona.edad }} años - 
+                                    <i class="fas fa-building"></i> {{ persona.oficina.nombre }}
+                                </small>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'personas:detalle' persona.pk %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'personas:editar' persona.pk %}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                    <a href="{% url 'personas:eliminar' persona.pk %}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5>No hay personas registradas</h5>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'personas:crear' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Primera Persona
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        {% if is_paginated %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Última</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

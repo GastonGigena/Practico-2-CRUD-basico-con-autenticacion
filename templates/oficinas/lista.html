@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Oficinas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-building"></i> Oficinas</h2>
+            <div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'oficinas:crear' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Oficina
+                    </a>
+                    <a href="{% url 'oficinas:carga_masiva' %}" class="btn btn-success">
+                        <i class="fas fa-upload"></i> Carga Masiva
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Búsqueda -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <input type="text" name="q" class="form-control me-2" placeholder="Buscar oficinas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de oficinas -->
+        <div class="card">
+            <div class="card-body">
+                {% if oficinas %}
+                    {% for oficina in oficinas %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <h5 class="mb-1">{{ oficina.nombre }}</h5>
+                                <small class="text-muted">{{ oficina.nombre_corto }}</small>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'oficinas:detalle' oficina.pk %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'oficinas:editar' oficina.pk %}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                    <a href="{% url 'oficinas:eliminar' oficina.pk %}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                        <h5>No hay oficinas registradas</h5>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'oficinas:crear' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Primera Oficina
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        {% if is_paginated %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Última</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

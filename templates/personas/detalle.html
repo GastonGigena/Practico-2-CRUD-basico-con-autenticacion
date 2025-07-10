@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ persona.nombre }} {{ persona.apellido }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-user"></i> {{ persona.apellido }}, {{ persona.nombre }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Apellido:</strong> {{ persona.apellido }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Nombre:</strong> {{ persona.nombre }}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <strong>Edad:</strong> {{ persona.edad }} años
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Oficina:</strong> 
+                        <a href="{% url 'oficinas:detalle' persona.oficina.pk %}">
+                            {{ persona.oficina.nombre }}
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'personas:editar' persona.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                        <a href="{% url 'personas:eliminar' persona.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'personas:lista' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

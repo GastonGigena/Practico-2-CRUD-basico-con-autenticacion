@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ oficina.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-building"></i> {{ oficina.nombre }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Nombre:</strong> {{ oficina.nombre }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Nombre Corto:</strong> {{ oficina.nombre_corto }}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'oficinas:editar' oficina.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                        <a href="{% url 'oficinas:eliminar' oficina.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'oficinas:lista' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Personas ({{ personas.count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if personas %}
+                    {% for persona in personas %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>{{ persona.apellido }}, {{ persona.nombre }}</span>
+                            <a href="{% url 'personas:detalle' persona.pk %}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No hay personas asignadas a esta oficina.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

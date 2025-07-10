@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Oficina{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-trash text-danger"></i> Confirmar Eliminación</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ¿Estás seguro de que quieres eliminar la oficina <strong>{{ oficina.nombre }}</strong>?
+                </div>
+                
+                {% if oficina.personas.count > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Atención:</strong> Esta oficina tiene {{ oficina.personas.count }} persona(s) asignada(s). 
+                        Al eliminar la oficina, también se eliminarán todas las personas asociadas.
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'oficinas:detalle' oficina.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
