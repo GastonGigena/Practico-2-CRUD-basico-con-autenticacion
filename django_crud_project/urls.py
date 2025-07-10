@@ -7,6 +7,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
     path('accounts/', include('accounts.urls')),
     path('oficinas/', include('oficinas.urls')),
-    path('personas/', include('personas.urls')),
+    path('personas/', include('personas.urls', namespace='personas')),
     path('captcha/', include('captcha.urls')),
 ]
+

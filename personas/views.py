@@ -96,3 +96,28 @@ def carga_masiva_personas(request):
     else:
         form = CargaMasivaPersonaForm()
     return render(request, 'personas/carga_masiva.html', {'form': form})
+
+import csv
+from .forms import CargaMasivaPersonasForm
+from oficinas.models import Oficina
+
+@login_required
+def carga_masiva_personas(request):
+    if request.method == 'POST':
+        form = CargaMasivaPersonasForm(request.POST, request.FILES)
+        if form.is_valid():
+            archivo = form.cleaned_data['archivo']
+            decoded_file = archivo.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(decoded_file)
+            for row in reader:
+                oficina = Oficina.objects.get(nombre=row['oficina'])
+                Persona.objects.create(
+                    apellido=row['apellido'],
+                    nombre=row['nombre'],
+                    edad=row['edad'],
+                    oficina=oficina
+                )
+            return redirect('personas:lista_personas')
+    else:
+        form = CargaMasivaPersonasForm()
+    return render(request, 'personas/carga_masiva.html', {'form': form})

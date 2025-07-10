@@ -17,3 +17,8 @@ class CargaMasivaPersonaForm(forms.Form):
         widget=forms.FileInput(attrs={'class': 'form-control', 'accept': '.csv'}),
         help_text="Formato CSV: apellido,nombre,edad,oficina_id"
     )
+    
+from django import forms
+
+class CargaMasivaPersonasForm(forms.Form):
+    archivo = forms.FileField(label="Archivo CSV")
