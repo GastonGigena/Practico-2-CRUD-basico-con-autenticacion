@@ -1,12 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from .models import Persona
-from .forms import PersonaForm, CargaMasivaPersonaForm
 from oficinas.models import Oficina
+from .forms import PersonaForm, CargaMasivaPersonaForm
 import csv
 import io
 
@@ -15,14 +14,15 @@ class PersonaListView(ListView):
     template_name = 'personas/lista.html'
     context_object_name = 'personas'
     paginate_by = 10
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         busqueda = self.request.GET.get('q')
         if busqueda:
             queryset = queryset.filter(
-                Q(nombre__icontains=busqueda) | 
-                Q(apellido__icontains=busqueda)
+                Q(apellido__icontains=busqueda) | 
+                Q(nombre__icontains=busqueda) |
+                Q(oficina__nombre__icontains=busqueda)
             )
         return queryset
 
@@ -73,51 +73,27 @@ def carga_masiva_personas(request):
             archivo = request.FILES['archivo']
             try:
                 datos = archivo.read().decode('utf-8')
-                reader = csv.reader(io.StringIO(datos))
-                next(reader)  # Saltar header
+                reader = csv.DictReader(io.StringIO(datos))
                 contador = 0
                 for row in reader:
-                    if len(row) >= 4:
+                    # Verificamos que existan las columnas necesarias
+                    if all(k in row for k in ('apellido', 'nombre', 'edad', 'oficina')):
                         try:
-                            oficina = Oficina.objects.get(id=int(row[3]))
-                            Persona.objects.create(
-                                apellido=row[0].strip(),
-                                nombre=row[1].strip(),
-                                edad=int(row[2]),
-                                oficina=oficina
-                            )
-                            contador += 1
-                        except (Oficina.DoesNotExist, ValueError):
+                            oficina = Oficina.objects.get(nombre=row['oficina'].strip())
+                        except Oficina.DoesNotExist:
+                            messages.warning(request, f"No existe la oficina: {row['oficina']}. Se omite esta persona.")
                             continue
+                        Persona.objects.create(
+                            apellido=row['apellido'].strip(),
+                            nombre=row['nombre'].strip(),
+                            edad=int(row['edad']),
+                            oficina=oficina
+                        )
+                        contador += 1
                 messages.success(request, f'Se cargaron {contador} personas exitosamente')
                 return redirect('personas:lista')
             except Exception as e:
                 messages.error(request, f'Error al procesar el archivo: {str(e)}')
     else:
         form = CargaMasivaPersonaForm()
-    return render(request, 'personas/carga_masiva.html', {'form': form})
-
-import csv
-from .forms import CargaMasivaPersonasForm
-from oficinas.models import Oficina
-
-@login_required
-def carga_masiva_personas(request):
-    if request.method == 'POST':
-        form = CargaMasivaPersonasForm(request.POST, request.FILES)
-        if form.is_valid():
-            archivo = form.cleaned_data['archivo']
-            decoded_file = archivo.read().decode('utf-8').splitlines()
-            reader = csv.DictReader(decoded_file)
-            for row in reader:
-                oficina = Oficina.objects.get(nombre=row['oficina'])
-                Persona.objects.create(
-                    apellido=row['apellido'],
-                    nombre=row['nombre'],
-                    edad=row['edad'],
-                    oficina=oficina
-                )
-            return redirect('personas:lista_personas')
-    else:
-        form = CargaMasivaPersonasForm()
     return render(request, 'personas/carga_masiva.html', {'form': form})

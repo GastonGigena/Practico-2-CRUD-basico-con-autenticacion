@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from .models import Oficina
@@ -14,7 +13,7 @@ class OficinaListView(ListView):
     template_name = 'oficinas/lista.html'
     context_object_name = 'oficinas'
     paginate_by = 10
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         busqueda = self.request.GET.get('q')
@@ -29,7 +28,7 @@ class OficinaDetailView(DetailView):
     model = Oficina
     template_name = 'oficinas/detalle.html'
     context_object_name = 'oficina'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['personas'] = self.object.personas.all()
@@ -77,14 +76,13 @@ def carga_masiva_oficinas(request):
             archivo = request.FILES['archivo']
             try:
                 datos = archivo.read().decode('utf-8')
-                reader = csv.reader(io.StringIO(datos))
-                next(reader)  # Saltar header
+                reader = csv.DictReader(io.StringIO(datos))
                 contador = 0
                 for row in reader:
-                    if len(row) >= 2:
+                    if 'nombre' in row and 'nombre_corto' in row:
                         Oficina.objects.create(
-                            nombre=row[0].strip(),
-                            nombre_corto=row[1].strip()
+                            nombre=row['nombre'].strip(),
+                            nombre_corto=row['nombre_corto'].strip()
                         )
                         contador += 1
                 messages.success(request, f'Se cargaron {contador} oficinas exitosamente')
