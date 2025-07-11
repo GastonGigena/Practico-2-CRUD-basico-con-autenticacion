@@ -1,16 +1,32 @@
 from django import forms
 from .models import Persona
 
+from django import forms
+from .models import Persona
+
 class PersonaForm(forms.ModelForm):
     class Meta:
         model = Persona
         fields = ['apellido', 'nombre', 'edad', 'oficina']
         widgets = {
-            'apellido': forms.TextInput(attrs={'class': 'form-control'}),
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'edad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'apellido': forms.TextInput(attrs={
+                'class': 'form-control',
+                'value': 'Desconocido',
+                'onfocus': "if(this.value=='Desconocido')this.value='';"
+            }),
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'value': 'Desconocido',
+                'onfocus': "if(this.value=='Desconocido')this.value='';"
+            }),
+            'edad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'value': '0',
+                'onfocus': "if(this.value=='0')this.value='';"
+            }),
             'oficina': forms.Select(attrs={'class': 'form-control'}),
         }
+
 
 class CargaMasivaPersonaForm(forms.Form):
     archivo = forms.FileField(

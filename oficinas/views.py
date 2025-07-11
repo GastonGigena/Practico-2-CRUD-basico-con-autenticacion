@@ -44,7 +44,7 @@ def oficina_crear(request):
             return redirect('oficinas:lista')
     else:
         form = OficinaForm()
-    return render(request, 'oficinas/form.html', {'form': form, 'titulo': 'Crear Oficina'})
+    return render(request, 'oficinas/forms.html', {'form': form, 'titulo': 'Crear Oficina'})
 
 @login_required
 def oficina_editar(request, pk):
