@@ -57,7 +57,7 @@ def oficina_editar(request, pk):
             return redirect('oficinas:detalle', pk=oficina.pk)
     else:
         form = OficinaForm(instance=oficina)
-    return render(request, 'oficinas/form.html', {'form': form, 'titulo': 'Editar Oficina'})
+    return render(request, 'oficinas/forms.html', {'form': form, 'titulo': 'Editar Oficina'})
 
 @login_required
 def oficina_eliminar(request, pk):
